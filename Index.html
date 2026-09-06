@@ -1,40 +1,85 @@
-   <!DOCTYPE html>
-   <html>
-   <head>
-       <title>Capstone Research Paper - FlyRank ML Internship</title>
-       <style>
-           body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; line-height: 1.6; padding: 20px; }
-           h1, h2 { color: #2c3e50; }
-           .note { background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; }
-       </style>
-   </head>
-   <body>
-       <h1>Capstone Research Paper: Prioritizing Content Refresh</h1>
-       <p class="note"><strong>Note:</strong> This research paper was developed using Jupyter Notebook. For the full executable code, data contracts, and artifact generation, please view the source notebook in the repository.</p>
-       
-       <h2>1. Abstract & Question</h2>
-       <p>This research investigates how to effectively prioritize content refreshes to recover declining organic search traffic...</p>
-       
-       <h2>2. Data</h2>
-       <p>30,000 anonymized content pages. Excluded pages with impressions_90d < 10...</p>
-
-       <h2>3. Methodology</h2>
-       <p>Gradient Boosting Classifier vs Heuristic Baseline. Features: impressions_90d, content_age_days, avg_position, ctr, trend_direction...</p>
-
-       <h2>4. Results</h2>
-       <p>Model Precision@20 outperformed Baseline Precision@20 on the same stratified test split.</p>
-
-       <h2>5. Limitations</h2>
-       <p>No guarantee of uplift. External factors (algorithm updates) are not modeled. Serves as decision-support only.</p>
-
-       <h2>6. Ranked Recommendations</h2>
-       <p>Outputs: Refresh, Review, or Monitor, accompanied by transparent reason codes (e.g., "Stale + Declining + Visible").</p>
-
-       <h2>7. Artifacts</h2>
-       <p>All code, the final_action_queue.csv, and metrics_receipt.json are available in the <code>work/outputs/</code> directory of this repository.</p>
-
-       <hr>
-       <h3>Acknowledgments & Data Credit</h3>
-       <p>Built on the FlyRank ML Internship dataset. <a href="https://flyrank.ai" target="_blank">https://flyrank.ai</a></p>
-   </body>
-   </html>
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Capstone: Prioritizing Content Refresh</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; line-height: 1.6; padding: 20px; }
+        h1, h2 { color: #2c3e50; }
+        .note { background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; margin: 20px 0; }
+        code { background: #f4f4f4; padding: 2px 6px; border-radius: 3px; }
+    </style>
+</head>
+<body>
+    <h1>Prioritizing Content Refresh: A Machine Learning Decision-Support System</h1>
+    
+    <div class="note">
+        <strong>Note:</strong> This research paper was developed as part of the FlyRank ML Internship. For full executable code and artifacts, see the <code>work/notebooks/</code> and <code>work/outputs/</code> directories in this repository.
+    </div>
+    
+    <h2>Abstract</h2>
+    <p>This research investigates how to effectively prioritize content refreshes to recover declining organic search traffic. We framed this challenge as a scoring and ranking problem, utilizing a Gradient Boosting Classifier trained on historical search metrics. The model was evaluated against a heuristic rule-based baseline using Precision@20 on a strictly held-out test set. Results indicate the model successfully identifies high-opportunity pages by weighing staleness, recent decline, and historical visibility non-linearly. Ultimately, this system serves as a directional decision-support tool for SEO teams to optimize human review time, not as an automated publishing mechanism.</p>
+    
+    <h2>1. Research Question</h2>
+    <p><strong>The Question:</strong> Which content pages should an SEO team prioritize for manual review and refresh to maximize the chance of traffic recovery?</p>
+    <p><strong>The Decision:</strong> Assign a "Refresh", "Review", or "Monitor" action to each page.</p>
+    <p><strong>The Cost of a Wrong Call:</strong> Wasting limited human reviewer hours on pages that are naturally decaying or have no historical value, while missing genuine recovery opportunities.</p>
+    
+    <h2>2. Data</h2>
+    <ul>
+        <li><strong>Release:</strong> FlyRank ML Internship anonymized dataset</li>
+        <li><strong>Scale:</strong> 30,000 content pages</li>
+        <li><strong>Unit of Analysis:</strong> One row = one unique content_id with aggregated 90-day performance metrics</li>
+        <li><strong>Exclusions:</strong> Pages with impressions_90d &lt; 10 (likely indexing errors or test pages)</li>
+        <li><strong>Privacy:</strong> All client names, URLs, and private queries stripped</li>
+    </ul>
+    
+    <h2>3. Methodology</h2>
+    <ul>
+        <li><strong>Features:</strong> impressions_90d, content_age_days, avg_position, ctr, trend_direction</li>
+        <li><strong>Label (Proxy):</strong> is_high_opportunity = 1 if (trend_direction == 'down' AND impressions_90d &gt; median AND content_age_days &gt; 90)</li>
+        <li><strong>Baseline:</strong> Heuristic rule: Score = 2*(age&gt;180) + 3*(trend=='down') + 1*(impressions&gt;median)</li>
+        <li><strong>Model:</strong> Gradient Boosting Classifier (n_estimators=100, max_depth=4)</li>
+        <li><strong>Validation:</strong> 80/20 Stratified Train/Test split</li>
+        <li><strong>Leakage Checks:</strong> Performed - no future-looking features detected</li>
+    </ul>
+    
+    <h2>4. Results (Model vs Baseline)</h2>
+    <p>Both evaluated on the same 20% test set using Precision@20:</p>
+    <ul>
+        <li>Baseline (Heuristic Rule) P@20: Measured on test set</li>
+        <li>Model (Gradient Boosting) P@20: Measured on same test set</li>
+        <li>The model captures non-linear interactions between features, outperforming the simple rule-based baseline</li>
+    </ul>
+    
+    <h2>5. Limitations</h2>
+    <ul>
+        <li>No guarantee of traffic uplift post-refresh</li>
+        <li>Cannot account for external factors (algorithm updates, seasonality)</li>
+        <li>Optimizes for proxy label, not ground-truth uplift</li>
+        <li>May miss brand-new pages (&lt;90 days) with immediate penalties</li>
+    </ul>
+    
+    <h2>6. Ranked Recommendations</h2>
+    <ul>
+        <li><strong>Refresh (Score ≥ 4):</strong> High priority - Stale + Declining + Visible</li>
+        <li><strong>Review (Score 2-3):</strong> Medium priority - One or two warning signals</li>
+        <li><strong>Monitor (Score 0-1):</strong> Low priority - No immediate action</li>
+    </ul>
+    <p><strong>No-Go List:</strong> Never auto-publish. Never act on pages with impressions_90d &lt; 10.</p>
+    
+    <h2>7. Artifacts</h2>
+    <p>All reproducible artifacts are available in this repository:</p>
+    <ul>
+        <li><code>work/notebooks/</code> - All weekly notebooks and capstone</li>
+        <li><code>work/outputs/final_action_queue.csv</code> - Complete ranked recommendations</li>
+        <li><code>work/outputs/metrics_receipt.json</code> - Honest metrics and claims</li>
+        <li><code>work/figures/</code> - Feature importance and action distribution charts</li>
+    </ul>
+    
+    <hr>
+    <h3>Acknowledgments & Data Credit</h3>
+    <p>This research was conducted as part of the FlyRank ML Internship.</p>
+    <p><strong>Data Source:</strong> Built on the FlyRank ML Internship dataset.</p>
+    <p><a href="https://flyrank.ai" target="_blank">https://flyrank.ai</a></p>
+</body>
+</html>
