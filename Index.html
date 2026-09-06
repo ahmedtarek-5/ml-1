@@ -1,0 +1,40 @@
+   <!DOCTYPE html>
+   <html>
+   <head>
+       <title>Capstone Research Paper - FlyRank ML Internship</title>
+       <style>
+           body { font-family: Arial, sans-serif; max-width: 800px; margin: 40px auto; line-height: 1.6; padding: 20px; }
+           h1, h2 { color: #2c3e50; }
+           .note { background: #f8f9fa; padding: 15px; border-left: 4px solid #3498db; }
+       </style>
+   </head>
+   <body>
+       <h1>Capstone Research Paper: Prioritizing Content Refresh</h1>
+       <p class="note"><strong>Note:</strong> This research paper was developed using Jupyter Notebook. For the full executable code, data contracts, and artifact generation, please view the source notebook in the repository.</p>
+       
+       <h2>1. Abstract & Question</h2>
+       <p>This research investigates how to effectively prioritize content refreshes to recover declining organic search traffic...</p>
+       
+       <h2>2. Data</h2>
+       <p>30,000 anonymized content pages. Excluded pages with impressions_90d < 10...</p>
+
+       <h2>3. Methodology</h2>
+       <p>Gradient Boosting Classifier vs Heuristic Baseline. Features: impressions_90d, content_age_days, avg_position, ctr, trend_direction...</p>
+
+       <h2>4. Results</h2>
+       <p>Model Precision@20 outperformed Baseline Precision@20 on the same stratified test split.</p>
+
+       <h2>5. Limitations</h2>
+       <p>No guarantee of uplift. External factors (algorithm updates) are not modeled. Serves as decision-support only.</p>
+
+       <h2>6. Ranked Recommendations</h2>
+       <p>Outputs: Refresh, Review, or Monitor, accompanied by transparent reason codes (e.g., "Stale + Declining + Visible").</p>
+
+       <h2>7. Artifacts</h2>
+       <p>All code, the final_action_queue.csv, and metrics_receipt.json are available in the <code>work/outputs/</code> directory of this repository.</p>
+
+       <hr>
+       <h3>Acknowledgments & Data Credit</h3>
+       <p>Built on the FlyRank ML Internship dataset. <a href="https://flyrank.ai" target="_blank">https://flyrank.ai</a></p>
+   </body>
+   </html>
